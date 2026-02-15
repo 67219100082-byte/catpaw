@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>cart</title>
+</head>
+
+<body>
+<table width="1500" border="1">
+  <tbody>
+    <tr>
+      <td><img src="tab/cart.png" width="1500" height="200" alt=""/></td>
+    </tr>
+  </tbody>
+</table>
+</body>
+	<head>
+<meta charset="utf-8">
+<title>ตะกร้าสินค้า</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+}
+.cart-box{
+  width:600px;
+  margin:50px auto;
+  background:#fff;
+  padding:30px;
+  border-radius:15px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th,td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+  text-align:center;
+}
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+.btn-del{background:#e74c3c;color:#fff;}
+.btn-qty{background:#d2b48c;}
+.btn-pay{background:#27ae60;color:#fff;font-size:16px;}
+.btn-nav{background:#cfa36a;color:#fff;}
+</style>
+</head>
+
+<body>
+
+<div class="cart-box">
+  <h2 align="center">ตะกร้าสินค้า</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>สินค้า</th>
+        <th>ราคา</th>
+        <th>จำนวน</th>
+        <th>ลบ</th>
+      </tr>
+    </thead>
+    <tbody id="cartItems"></tbody>
+  </table>
+
+  <h3 align="center" id="totalPrice">ราคารวมทั้งหมด: 0 บาท</h3>
+
+  <div align="center">
+    <button class="btn-nav" onclick="goHome()">กลับหน้า Home</button>
+    <button class="btn-nav" onclick="goShop()">เลือกสินค้าเพิ่ม</button>
+    <br><br>
+    <button class="btn-pay" onclick="checkout()">ชำระเงิน</button>
+  </div>
+</div>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+cart = cart.map(item => ({
+  ...item,
+  qty: item.qty || 1
+}));
+
+function renderCart(){
+  let tbody = document.getElementById("cartItems");
+  tbody.innerHTML = "";
+  let total = 0;
+
+  cart.forEach((item,index)=>{
+    total += item.price * item.qty;
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${item.name}</td>
+        <td>${item.price}</td>
+        <td>
+          <button class="btn-qty" onclick="changeQty(${index},-1)">-</button>
+          ${item.qty}
+          <button class="btn-qty" onclick="changeQty(${index},1)">+</button>
+        </td>
+        <td>
+          <button class="btn-del" onclick="removeItem(${index})">ลบ</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("totalPrice").innerText =
+    "ราคารวมทั้งหมด: " + total + " บาท";
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function changeQty(index,change){
+  cart[index].qty += change;
+  if(cart[index].qty <= 0){
+    cart.splice(index,1);
+  }
+  renderCart();
+}
+
+function removeItem(index){
+  cart.splice(index,1);
+  renderCart();
+}
+
+function checkout(){
+  if(cart.length === 0){
+    alert("ไม่มีสินค้าในตะกร้า");
+    return;
+  }
+  alert("ขอบคุณสำหรับการสั่งซื้อ");
+  localStorage.removeItem("cart");
+  window.location.href = "index.html";
+}
+
+function goHome(){
+  window.location.href = "index.html";
+}
+
+function goShop(){
+  window.location.href = "cat shop.html";
+}
+
+renderCart();
+</script>
+
+</body>
+</html>
